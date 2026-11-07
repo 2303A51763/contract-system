@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: contract-api
+  namespace: contracts
+  labels:
+    app: contract-api
+spec:
+  selector:
+    app: contract-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contract-api
+  namespace: contracts
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: contract-api
+  template:
+    metadata:
+      labels:
+        app: contract-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/2303a51763/contract-system:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: api-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
