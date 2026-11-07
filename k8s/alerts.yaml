@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: contract-api-alerts
+  namespace: contracts
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: contract-api
+      rules:
+        - alert: HighErrorRate
+          expr: sum(rate(http_request_duration_seconds_count{status=~'5..'}[5m])) > 0.5
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: API is returning many 5xx errors
+        - alert: SlowRequests
+          expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: p95 latency is above 1 second
