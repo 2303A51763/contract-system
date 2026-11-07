@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  init.sql: "CREATE TABLE users (\r\n  id SERIAL PRIMARY KEY,\r\n  email TEXT UNIQUE
+    NOT NULL,\r\n  password_hash TEXT NOT NULL,\r\n  role TEXT NOT NULL CHECK (role
+    IN ('REQUESTER','LEGAL','FINANCE','ADMIN'))\r\n);\r\n\r\nCREATE TABLE contracts
+    (\r\n  id SERIAL PRIMARY KEY,\r\n  title TEXT NOT NULL,\r\n  counterparty TEXT
+    NOT NULL,\r\n  value NUMERIC(12,2) NOT NULL DEFAULT 0,\r\n  status TEXT NOT NULL
+    DEFAULT 'DRAFT',\r\n  created_by INT REFERENCES users(id),\r\n  start_date DATE,\r\n
+    \ end_date DATE,\r\n  created_at TIMESTAMPTZ DEFAULT now()\r\n);\r\n\r\nCREATE
+    TABLE approvals (\r\n  id SERIAL PRIMARY KEY,\r\n  contract_id INT REFERENCES
+    contracts(id) ON DELETE CASCADE,\r\n  approver_role TEXT NOT NULL,\r\n  decision
+    TEXT NOT NULL DEFAULT 'PENDING',\r\n  decided_by INT REFERENCES users(id),\r\n
+    \ comment TEXT,\r\n  decided_at TIMESTAMPTZ\r\n);\r\n\r\nCREATE TABLE audit_log
+    (\r\n  id SERIAL PRIMARY KEY,\r\n  contract_id INT,\r\n  actor_id INT,\r\n  action
+    TEXT NOT NULL,\r\n  details JSONB,\r\n  at TIMESTAMPTZ DEFAULT now()\r\n);"
+kind: ConfigMap
+metadata:
+  name: db-init
+  namespace: contracts
