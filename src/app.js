@@ -1,3 +1,4 @@
+require('express-async-errors');
 const express = require('express');
 const db = require('./db');
 const auth = require('./auth');
@@ -81,6 +82,12 @@ app.post('/contracts/:id/decision', auth.authenticate,
 app.get('/contracts/:id/audit', auth.authenticate, async (req, res) => {
   const r = await db.query('SELECT * FROM audit_log WHERE contract_id=$1 ORDER BY at', [req.params.id]);
   res.json(r.rows);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === '23505') return res.status(409).json({ error: 'Already exists' });
+  console.error(err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 module.exports = app;
