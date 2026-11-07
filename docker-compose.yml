@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: contracts
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/contracts
+      JWT_SECRET: local-dev-secret
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+volumes:
+  pgdata:
