@@ -23,3 +23,10 @@ spec:
             severity: warning
           annotations:
             summary: p95 latency is above 1 second
+        - alert: DemoAlwaysFiring
+          expr: vector(1) > 0
+          for: 1m
+          labels:
+            severity: info
+          annotations:
+            summary: Demo alert to prove alerting works
