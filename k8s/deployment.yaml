@@ -4,7 +4,7 @@ metadata:
   name: contract-api
   namespace: contracts
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: contract-api
